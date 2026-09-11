@@ -1,0 +1,109 @@
+Tool versions used by this capsule (recorded from the built environment)
+
+Version: 0.7.19-r1273
+samtools 1.24
+pairtools, version 1.1.3
+bedtools v2.31.1
+mosdepth 0.3.14
+CHiCAGO (R package) 1.18.0
+chicagoTools: bam2chicago.sh, runChicago.R (Dovetail Genomics fork)
+
+=== ./run --help ===
+MCC processing: fastq -> WashU + CHiCAGO outputs.
+Inputs are discovered under /data when the matching flag is not given.
+  --sample_name=NAME               output prefix (default: derived from the R1 file)
+  --r1_fastq=PATH --r2_fastq=PATH  read 1 / read 2 fastq(.gz)
+  --reference_fasta=PATH           reference fasta (bwa/faidx indexes built if absent)
+  --design_dir=PATH                CHiCAGO design dir holding .rmap and .baitmap
+  --probes_bed=PATH                padded probe bed for on-target / coverage QC
+  --species=human|mouse            reported in the run summary (default human)
+  --design_resolution=5kb|10kb|20kb  picks a design dir by name (default 10kb)
+  --chicago_cutoff=N               CHiCAGO score cutoff (default 5)
+  --min_mapq=N                     pairtools parse --min-mapq (default 40)
+  --threads=N                      default: all available cores
+  --export_formats=LIST            CHiCAGO --export-format list
+  --filter_interactions=true|false  also write cis 10kb-2Mb, >=5 read ibed
+
+=== bam2chicago.sh usage ===
+#!/bin/bash
+
+set -e
+
+if [ $# -lt 4 ]
+  then
+    echo "Usage: bam2chicago.sh <bamfile> <baitmap-file> <digest-rmap-file> <sample-name> [nodelete]"
+    exit
+fi
+
+command -v bedtools >/dev/null 2>&1 || { echo >&2 "Error: Cannot execute bedtools. Check that it's installed and added to PATH. Aborting."; exit 1; }
+command -v awk >/dev/null 2>&1 || { echo >&2 "Error: Cannot execute awk. Aborting."; exit 1; }
+command -v perl >/dev/null 2>&1 || { echo >&2 "Error: Cannot execute perl. Aborting."; exit 1; }
+
+#SCRIPT=$(readlink -f $0)
+#pipelinedir=`dirname $SCRIPT`
+
+bam=$1
+bam0=`basename ${bam}`
+bamname=`echo ${bam0%\.*}`
+
+=== runChicago.R --help ===
+
+***runChicago.R
+
+
+
+
+usage: Rscript runChicago.R [--] [--help] [--print-memory] [--rda]
+       [--save-df-only] [--examples-full-range] [--en-full-cis-range]
+       [--en-trans] [--features-only] [--opts OPTS] [--settings-file
+       SETTINGS-FILE] [--design-dir DESIGN-DIR] [--cutoff CUTOFF]
+       [--export-format EXPORT-FORMAT] [--export-order EXPORT-ORDER]
+       [--examples-prox-dist EXAMPLES-PROX-DIST] [--output-dir
+       OUTPUT-DIR] [--en-feat-files EN-FEAT-FILES] [--en-feat-list
+       EN-FEAT-LIST] [--en-feat-folder EN-FEAT-FOLDER] [--en-min-dist
+       EN-MIN-DIST] [--en-max-dist EN-MAX-DIST] [--en-sample-no
+       EN-SAMPLE-NO] <input-files> <output-prefix>
+
+Run Chicago from input files
+
+positional arguments:
+  <input-files>          Full path to the input file (or
+                         comma-separated list of files)
+  <output-prefix>        Output file names prefix (cannot contain
+                         folders)
+
+flags:
+  -h, --help             show this help message and exit
+  -p, --print-memory     Should chicagoPipeline print out memory use?
+  -r, --rda              Save the Chicago object as an RDa image
+                         (instead of the default RDS)
+  --save-df-only         Save only the data part of the Chicago object,
+                         as a data frame (for compatibility)
+  --examples-full-range  Also plot examples for the full distance range
+  --en-full-cis-range    Assess the enrichment for features for the
+                         full distance range [same chromosome only; use
+                         --en-trans in addition to include
+                         trans-interactions] (can be very slow!)
+  --en-trans             Include trans-interactions into enrichment
+                         analysis
+  -f, --features-only    Re-run feature enrichment analysis with
+                         Chicago output files. With this option,
+                         <input-files> must be either a single Rds file
+                         (must contain full Chicago objects) or '-', in
+                         which case the file location will be inferred
+                         automatically from <output-prefix> and files
+                         added to the corresponding folder.
+
+optional arguments:
+  -x, --opts             RDS file containing argument values
+  -s, --settings-file    Full path to Chicago settings file
+  -d, --design-dir       Folder with capture design files (note the
+                         settings file has priority over these)
+                         [default: ]
+  -c, --cutoff           Score cutoff for writing out peaks and testing
+                         feature enrichment [default: 5]
+  -e, --export-format    File format for writing out peaks: one or more
+                         of the following:
+                         seqMonk,interBed,washU_text,washU_track
+                         (comma-separated) [default: washU_text]
+  --export-order         Should the results be ordered by "score" or

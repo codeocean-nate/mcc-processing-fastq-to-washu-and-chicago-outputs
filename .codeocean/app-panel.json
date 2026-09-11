@@ -1,0 +1,121 @@
+{
+	"version": 1,
+	"general": {
+		"title": "MCC processing: FASTQ to WashU and CHiCAGO outputs",
+		"instructions": "Attach the paired FASTQ reads, a reference FASTA and a CHiCAGO design directory (.rmap + .baitmap); an optional padded probe BED enables target-enrichment QC. Inputs are located automatically under /data. Outputs include the WashU long-range text and tabix track plus the CHiCAGO chinput, ibed, seqMonk and .Rds files."
+	},
+	"categories": [
+		{
+			"id": "sample",
+			"name": "Sample",
+			"help_text": "Naming and species of the library being processed"
+		},
+		{
+			"id": "alignment",
+			"name": "Alignment and pairs",
+			"help_text": "bwa / pairtools settings for valid-pair calling"
+		},
+		{
+			"id": "chicago",
+			"name": "Interaction calling",
+			"help_text": "CHiCAGO design resolution, significance cutoff and export formats"
+		}
+	],
+	"parameters": [
+		{
+			"id": "FfeqaxldegxkGu2r",
+			"category": "sample",
+			"name": "sample_name",
+			"description": "Output file prefix. Leave empty to derive it from the read 1 file name.",
+			"type": "text",
+			"value_type": "string"
+		},
+		{
+			"id": "8VO7HGLG6xdEAbSl",
+			"category": "sample",
+			"name": "species",
+			"description": "Recorded in the run summary.",
+			"type": "list",
+			"value_type": "string",
+			"default_value": "human",
+			"extra_data": [
+				"human",
+				"mouse"
+			]
+		},
+		{
+			"id": "zbmVJ0Z2AeT7Bkvc",
+			"category": "alignment",
+			"name": "threads",
+			"description": "Cores for bwa, pairtools and samtools.",
+			"type": "text",
+			"value_type": "number",
+			"default_value": "16",
+			"minimum": 1
+		},
+		{
+			"id": "W7nEq6l4bl9abw5A",
+			"category": "alignment",
+			"name": "min_mapq",
+			"description": "pairtools parse --min-mapq; 40 is the protocol default.",
+			"type": "text",
+			"value_type": "number",
+			"default_value": "40",
+			"minimum": 0
+		},
+		{
+			"id": "cTLjHlthCIj8VwnA",
+			"category": "chicago",
+			"name": "design_resolution",
+			"description": "Selects the attached CHiCAGO design directory by name; 10 kb suits libraries of 150M+ read pairs.",
+			"type": "list",
+			"value_type": "string",
+			"default_value": "10kb",
+			"extra_data": [
+				"5kb",
+				"10kb",
+				"20kb"
+			]
+		},
+		{
+			"id": "6YUtHx5EyiKkZlru",
+			"category": "chicago",
+			"name": "chicago_cutoff",
+			"description": "CHiCAGO score threshold for calling significant interactions.",
+			"type": "text",
+			"value_type": "number",
+			"default_value": "5",
+			"minimum": 0
+		},
+		{
+			"id": "SkKhcutcUnSSMvb7",
+			"category": "chicago",
+			"name": "export_formats",
+			"description": "CHiCAGO --export-format list; keep washU_text and washU_track for browser files.",
+			"type": "text",
+			"value_type": "string",
+			"default_value": "interBed,washU_text,seqMonk,washU_track"
+		},
+		{
+			"id": "hwVyv9peDVXH5sz9",
+			"category": "chicago",
+			"name": "filter_interactions",
+			"description": "Also write a cis-only, 10 kb-2 Mb, \u003e=5 read filtered ibed.",
+			"type": "list",
+			"value_type": "string",
+			"default_value": "true",
+			"extra_data": [
+				"true",
+				"false"
+			]
+		},
+		{
+			"id": "7Hry6t8POnRnwIff",
+			"category": "chicago",
+			"name": "chicago_settings_file",
+			"description": "Optional path to a CHiCAGO settings file (e.g. a lower minNPerBait for shallow pilot libraries).",
+			"type": "text",
+			"value_type": "string"
+		}
+	]
+}

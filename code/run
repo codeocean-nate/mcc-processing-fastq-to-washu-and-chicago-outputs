@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Thin driver: App Panel passes named parameters (--flag=value) straight through.
+set -euo pipefail
+exec bash /code/mcc_pipeline.sh "$@"

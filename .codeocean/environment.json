@@ -1,0 +1,10 @@
+{
+	"version": 1,
+	"base_image": "codeocean/miniconda3:25.3.0-3-python3.12.10-ubuntu22.04",
+	"post_install": true,
+	"options": {
+		"registry_host_arg": true,
+		"git_ask_pass": true,
+		"mount_secrets": true
+	}
+}
